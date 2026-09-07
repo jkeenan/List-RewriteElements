@@ -1,9 +1,10 @@
 package List::RewriteElements;
-#$Id: RewriteElements.pm 1102 2006-12-12 01:09:25Z jimk $
-$VERSION = 0.02;
+#$Id: RewriteElements.pm 1108 2006-12-13 01:24:29Z jimk $
+$VERSION = 0.03;
 use strict;
 use warnings;
 use Carp;
+use Cwd qw(cwd realpath);
 use File::Basename;
 use File::Copy;
 use Tie::File;
@@ -61,29 +62,69 @@ sub new {
     }
 
     my $self = bless ($argsref, $class);
+
+    $self->{rows_in} = scalar(@{$self->{working}});
+    if (defined $self->{header_rule} or defined $self->{header_suppress}) {
+        $self->{records_in} = $self->{rows_in} - 1;
+    } else {
+        $self->{records_in} = $self->{rows_in};
+    }
+    # Next attributes are initialized to empty strings because their value
+    # is not fixed until after generate_output() has been called.
+    $self->{output_path} = q{};
+    $self->{output_basename} = q{};
+    # Next attributes are initialized to zero because their value
+    # is not fixed until after generate_output() has been called.
+    $self->{rows_out} = 0;
+    $self->{records_out} = 0;
+    $self->{records_changed} = 0;
+    $self->{records_unchanged} = 0;
+    $self->{records_deleted} = 0;
     return $self;
 }
 
+#    $output_row_count       = $lre->get_total_rows();
+#    $output_record_count    = $lre->get_total_records();
+#    $records_changed        = $lre->get_records_changed();
+#    $records_unchanged      = $lre->get_records_unchanged();
+#    $records_deleted        = $lre->get_records_deleted();
+#    $header_status          = $lre->get_header_status();
+
 sub generate_output {
     my $self = shift;
-    if (! defined $self->{output_file}) { # print to STDOUT
-        if (! defined $self->{header_rule}) {
-            $self->_body_rule_handler();
+    if  ( !                 # print to STDOUT 
+          ( 
+            defined $self->{output_file}   or
+            defined $self->{output_suffix}
+          )
+        ) {
+        $self->_handler_control();
+    } else {                # print to file
+        my $outfile;
+        if (defined $self->{output_file}) {
+            $outfile = $self->{output_file};
         } else {
-            $self->_header_body_rule_handler();
+            $outfile = cwd() . '/' . basename($self->{file})
+                . $self->{output_suffix};
         }
-    } else { # print to file
-        open my $OUT, ">$self->{output_file}"
-            or croak "Unable to open $self->{output_file} for writing";
+        open my $OUT, ">$outfile"
+            or croak "Unable to open $outfile for writing";
         my $oldfh = select($OUT);
-        if (! defined $self->{header_rule}) {
-            $self->_body_rule_handler();
-        } else {
-            $self->_header_body_rule_handler();
-        }
+        $self->_handler_control();
         close $OUT 
-            or croak "Unable to close $self->{output_file} after writing";
+            or croak "Unable to close $outfile after writing";
         select $oldfh;
+        $self->{output_path} = realpath($outfile);
+        $self->{output_basename} = basename($self->{output_path});
+    }
+}
+
+sub _handler_control {
+    my $self = shift;
+    if (! defined $self->{header_rule}) {
+        $self->_body_rule_handler();
+    } else {
+        $self->_header_body_rule_handler();
     }
 }
 
@@ -113,6 +154,46 @@ sub _header_body_rule_handler {
         print "$newheader\n";
     }
     $self->_body_rule_handler();
+}
+
+sub get_output_path {
+    my $self = shift;
+    return $self->{output_path};
+}
+
+sub get_output_basename {
+    my $self = shift;
+    return $self->{output_basename};
+}
+
+sub get_total_rows {
+    my $self = shift;
+    return $self->{rows_out};
+}
+
+sub get_total_records {
+    my $self = shift;
+    return $self->{records_out};
+}
+
+sub get_records_changed {
+    my $self = shift;
+    return $self->{records_changed};
+}
+
+sub get_records_unchanged {
+    my $self = shift;
+    return $self->{records_unchanged};
+}
+
+sub get_records_deleted {
+    my $self = shift;
+    return $self->{records_deleted};
+}
+
+sub get_header_status {
+    my $self = shift;
+    return $self->{header_status};
 }
 
 1;
@@ -321,7 +402,8 @@ The value of an C<output_file> element should be a full path to the newly
 created file.  If you wish to create a new file name without specifying a full
 path but simply by tacking on a suffix to the name of the incoming file,
 provide an C<output_suffix> element and the outgoing file will be created in
-the I<same> directory as the incoming file.  An C<output_suffix> element will
+the directory which is the I<current working directory> as of the point where
+C<generate_output()> is called.  An C<output_suffix> element will
 be ignored if an C<output_file> element is provided.
 
 =item * Note 1
@@ -404,6 +486,12 @@ B<Arguments:>  None.
 
 B<Return Value:>  String holding path to newly created output file. 
 
+B<Comment:>  Since use of the C<output_suffix> attribute means that the full
+path to the output file will not be known until C<generate_output()> has been
+called, C<get_output_path()> will only give a meaningful result once
+C<generate_output()> has been called.  Otherwise, it will default to an empty
+string.
+
 =head2 C<get_output_basename()>
 
 B<Purpose:>  Get only the basename of the newly created output file.
@@ -411,6 +499,12 @@ B<Purpose:>  Get only the basename of the newly created output file.
 B<Arguments:>  None.
 
 B<Return Value:>  String holding basename of newly created output file.
+
+B<Comment:>  Since use of the C<output_suffix> attribute means that the full
+path to the output file will not be known until C<generate_output()> has been
+called, C<get_output_basename()> will only give a meaningful result once
+C<generate_output()> has been called.  Otherwise, it will default to an empty
+string.
 
 =head2 C<get_total_rows()>
 
