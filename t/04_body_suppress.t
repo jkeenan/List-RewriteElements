@@ -1,8 +1,8 @@
 # -*- perl -*-
-#$Id: 04_body_suppress.t 1103 2006-12-12 01:13:29Z jimk $
+#$Id: 04_body_suppress.t 1110 2006-12-14 03:56:31Z jimk $
 # t/04_body_suppress.tt - test what happens when body_suppress element is supplied
 
-use Test::More qw(no_plan); # tests => 2;
+use Test::More tests => 35;
 use_ok( 'List::RewriteElements' );
 use_ok( 'Cwd' );
 use_ok( 'File::Temp', qw| tempdir | );
@@ -59,8 +59,30 @@ is($lines[-1], q{90}, "Last element of list is correct");
     } );
     isa_ok ($lre, 'List::RewriteElements');
 
+    is($lre->get_records_deleted(), 0,
+        "Count of records deleted not yet determined");
+    is($lre->get_total_records(), 0,
+        "Count of records out not yet determined");
+    is($lre->get_records_changed(), 0,
+        "Count of records changed not yet determined");
+    is($lre->get_records_unchanged(), 0,
+        "Count of records unchanged not yet determined");
+    is($lre->get_total_rows(), 0,
+        "Count of rows out not yet determined");
+
     $lre->generate_output();
     ok(-f $output, "Output file created");
+
+    is($lre->get_records_deleted(), 1,
+        "Confirmed count of records deleted");
+    is($lre->get_total_records(), 9,
+        "Confirmed count of records out");
+    is($lre->get_records_changed(), 9,
+        "Count of records changed confirmed");
+    is($lre->get_records_unchanged(), 0,
+        "Count of records unchanged confirmed");
+    is($lre->get_total_rows(), 9,
+        "Confirmed count of rows out");
 
     my @lines;
     tie @lines, 'Tie::File', $output;

@@ -1,8 +1,8 @@
 # -*- perl -*-
-#$Id: 05_header_rule.t 1103 2006-12-12 01:13:29Z jimk $
+#$Id: 05_header_rule.t 1110 2006-12-14 03:56:31Z jimk $
 # t/05_header_rule.t - test what happens when a header_rule is supplied
 
-use Test::More qw(no_plan); # tests => 2;
+use Test::More tests => 17;
 use_ok( 'List::RewriteElements' );
 use_ok( 'Cwd' );
 use_ok( 'File::Temp', qw| tempdir | );

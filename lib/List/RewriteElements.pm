@@ -1,6 +1,6 @@
 package List::RewriteElements;
-#$Id: RewriteElements.pm 1108 2006-12-13 01:24:29Z jimk $
-$VERSION = 0.03;
+#$Id: RewriteElements.pm 1111 2006-12-14 04:05:19Z jimk $
+$VERSION = 0.04;
 use strict;
 use warnings;
 use Carp;
@@ -64,7 +64,8 @@ sub new {
     my $self = bless ($argsref, $class);
 
     $self->{rows_in} = scalar(@{$self->{working}});
-    if (defined $self->{header_rule} or defined $self->{header_suppress}) {
+#    if (defined $self->{header_rule} or defined $self->{header_suppress}) {
+    if (defined $self->{header_rule}) {
         $self->{records_in} = $self->{rows_in} - 1;
     } else {
         $self->{records_in} = $self->{rows_in};
@@ -117,11 +118,23 @@ sub generate_output {
         $self->{output_path} = realpath($outfile);
         $self->{output_basename} = basename($self->{output_path});
     }
+    $self->{records_out} = $self->{records_in} - $self->{records_deleted};
+    $self->{records_unchanged} = 
+        $self->{records_out} - $self->{records_changed};
+     if (! defined $self->{header_rule}) {
+        $self->{rows_out} = $self->{records_out};
+    } else {
+        if ($self->{header_status} != -1) {
+            $self->{rows_out} = $self->{records_out} + 1;
+        } else {
+            $self->{rows_out} = $self->{records_out};
+        }
+    }
 }
 
 sub _handler_control {
     my $self = shift;
-    if (! defined $self->{header_rule}) {
+     if (! defined $self->{header_rule}) {
         $self->_body_rule_handler();
     } else {
         $self->_header_body_rule_handler();
@@ -133,25 +146,39 @@ sub _body_rule_handler {
     RECORD:  foreach my $el (@{$self->{working}}) {
         chomp $el;
         if (defined $self->{body_suppress}) {
-            next RECORD unless defined (&{$self->{body_suppress}}($el));
+            unless (defined (&{$self->{body_suppress}}($el))) {
+                $self->{records_deleted}++;
+                next RECORD;
+            }
         }
         my $newel = &{$self->{body_rule}}($el);
         print "$newel\n";
+#        if ($el ne $newel) {
+#            $self->{records_changed}++;
+#        }
+        $self->{records_changed}++ if $el ne $newel;
     }
 }
 
 sub _header_body_rule_handler {
     my $self = shift;
+    $self->{header_status} = 0; # header present, as yet unchanged
     my $header = shift(@{$self->{working}});
     chomp $header;
     if (defined $self->{header_suppress}) {
         if (defined (&{$self->{header_suppress}}($header))) {
             my $newheader = &{$self->{header_rule}}($header);
             print "$newheader\n";
+            $self->{header_status} = 1 if $header ne $newheader;
+            # header changed
+        } else {
+            $self->{header_status} = -1;  # header suppressed
         }
     } else {
         my $newheader = &{$self->{header_rule}}($header);
         print "$newheader\n";
+        $self->{header_status} = 1 if $header ne $newheader;
+        # header changed
     }
     $self->_body_rule_handler();
 }
@@ -321,13 +348,12 @@ the transformation.
 List::RewriteElements is useful when the number of records in the incoming
 file may be large and you do not want to hold the entire list in memory.
 Similarly, the newly generated records are not held in memory but are
-immediately output.
+immediately C<print>ed to STDOUT or to file.
 
 On the other hand, if for some reason you already have an array of records in
 memory, you can use List::RewriteElements to apply rules and criteria to each
 element of the array and then print the transformed records (again, without
-holding the output in memory).  In what follows we shall usually use I<rows>,
-I<records> and I<list elements> interchangeably.
+holding the output in memory).
 
 =head1 SUBROUTINES
 
@@ -594,9 +620,10 @@ above.
 
 Mark Jason Dominus' Tie::File module is one of my Fave 5 CPAN modules.  It's
 excellent for modifying a file in place.  But I frequently have to leave the
-source file unmodified and create a new file, which implies using, at the very
-least, File::Copy in addition to Tie::File.  List::RewriteElements hides all
-that copying and tying.  It also provides the statistical report methods.
+source file unmodified and create a new file, which implies, at the very
+least, opening, printing to, and closing filehandles in addition to using 
+Tie::File.  List::RewriteElements hides all
+that.  It also provides the statistical report methods.
 
 =head2 Couldn't I do this with C<map> and C<grep>?
 
@@ -620,6 +647,12 @@ included in the distribution under the F<t/> directory.
 None known at this time.  File bug reports at L<http://rt.cpan.org>.
 
 =head1 HISTORY
+
+0.04 Wed Dec 13 23:04:33 EST 2006
+    - More tests; fine-tuning of code and documentation.  First CPAN upload.
+
+0.03 Tue Dec 12 22:13:00 EST 2006
+    - Implementation of statistica methods; more tests.
 
 0.02 Mon Dec 11 19:38:26 EST 2006
     - Added tests to demonstrate use of closures to supply additional

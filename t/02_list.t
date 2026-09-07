@@ -1,8 +1,8 @@
 # -*- perl -*-
-#$Id: 02_list.t 1103 2006-12-12 01:13:29Z jimk $
+#$Id: 02_list.t 1110 2006-12-14 03:56:31Z jimk $
 # t/02_list.t - test what happens when source is a list
 
-use Test::More qw(no_plan); # tests => 2;
+use Test::More tests => 15;
 use_ok( 'List::RewriteElements' );
 use_ok( 'Cwd' );
 use_ok( 'File::Temp', qw| tempdir | );

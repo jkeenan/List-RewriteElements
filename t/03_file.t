@@ -1,8 +1,8 @@
 # -*- perl -*-
-#$Id: 03_file.t 1108 2006-12-13 01:24:29Z jimk $
+#$Id: 03_file.t 1110 2006-12-14 03:56:31Z jimk $
 # t/03_file.t - test what happens when source is a file
 
-use Test::More qw(no_plan); # tests => 2;
+use Test::More tests => 36;
 use_ok( 'List::RewriteElements' );
 use lib ( "t/testlib" );
 use_ok( 'IO::Capture::Stdout' );
