@@ -1,5 +1,5 @@
 # -*- perl -*-
-
+#$Id: 03_file.t 1103 2006-12-12 01:13:29Z jimk $
 # t/03_file.t - test what happens when source is a file
 
 use Test::More qw(no_plan); # tests => 2;

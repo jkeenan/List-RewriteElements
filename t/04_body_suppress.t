@@ -1,5 +1,5 @@
 # -*- perl -*-
-
+#$Id: 04_body_suppress.t 1103 2006-12-12 01:13:29Z jimk $
 # t/04_body_suppress.tt - test what happens when body_suppress element is supplied
 
 use Test::More qw(no_plan); # tests => 2;
@@ -8,6 +8,7 @@ use_ok( 'Cwd' );
 use_ok( 'File::Temp', qw| tempdir | );
 use_ok( 'Tie::File' );
 use_ok( 'Carp' );
+use_ok( 'File::Copy' );
 use lib ( "t/testlib" );
 use_ok( 'IO::Capture::Stdout' );
 
@@ -66,6 +67,66 @@ is($lines[-1], q{90}, "Last element of list is correct");
     is($lines[0], q{10}, "First element of list is correct");
     is($lines[-1], q{90}, "Last element of list is correct");
     untie @lines;
+    
+    ok(chdir $cwd, 'changed back to original directory after testing');
+}
+
+# In case below, body rule requires fetching an item from external
+# environment, thereby changing the state of the external environment.
+{
+    my $cwd = cwd();
+    
+    my $tdir = tempdir( CLEANUP => 1);
+    ok(chdir $tdir, 'changed to temp directory for testing');
+
+    my $dupe = qq{$tdir/complex.txt};
+    copy(qq{$cwd/t/testlib/complex.txt}, $dupe);
+    ok(-f $dupe, "sample file copied correctly");
+
+    my @greeks;
+    tie @greeks, 'Tie::File', $dupe;
+    my $numcount = scalar(@greeks);
+    
+    my $snatch_number_ref = sub {
+        return (shift @greeks);
+    };
+
+    my $output = "./output";
+    $lre  = List::RewriteElements->new ( {
+        list        => [ map {"$_\n"} (1..10) ],
+        body_rule   => sub {
+            my $record = shift;
+            my $rv;
+            chomp $record;
+            if ($record eq '9') {
+                $rv = &{$snatch_number_ref};
+            } else {
+                $rv = (10 * $record);
+            }
+            return $rv;
+        },
+        body_suppress   => sub {
+            my $record = shift;
+            chomp $record;
+            return if $record eq '10';
+        },
+        output_file => $output,
+    } );
+    isa_ok ($lre, 'List::RewriteElements');
+
+    $lre->generate_output();
+    ok(-f $output, "Output file created");
+
+    my @lines;
+    tie @lines, 'Tie::File', $output;
+    is($lines[0], q{10}, "First element of list is correct");
+    is($lines[-2], q{80}, "Next to last element of list is correct");
+    is($lines[-1], q{alpha}, "Last element of list is correct");
+    untie @lines;
+
+    is(scalar(@greeks), $numcount - 1,
+        "Count of items in external file is correct");
+    untie @greeks;
     
     ok(chdir $cwd, 'changed back to original directory after testing');
 }

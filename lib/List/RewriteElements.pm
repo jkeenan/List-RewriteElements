@@ -1,6 +1,6 @@
 package List::RewriteElements;
-#$Id#
-$VERSION = 0.01;
+#$Id: RewriteElements.pm 1102 2006-12-12 01:09:25Z jimk $
+$VERSION = 0.02;
 use strict;
 use warnings;
 use Carp;
@@ -55,7 +55,7 @@ sub new {
         my @elements;
         tie @elements, 'Tie::File', $argsref->{file}
             or croak "Unable to tie to $argsref->{file}";
-        $argsref->{working} = \@elements;  # don't know if this will work
+        $argsref->{working} = \@elements;
     } else {
         $argsref->{working} = $argsref->{list};
     }
@@ -338,6 +338,49 @@ logically applied I<before> any C<body_rule> or C<header_rule> formula.  We
 don't apply the formula to transform a record if the record should not be
 output at all.
 
+=item * Note 3
+
+If a C<header_rule>, C<body_rule>, C<header_suppress> or C<body_suppress>
+either (a) needs additional information from the external environment above
+and beyond that contained in the individual data record or (b) needs to cause
+a change in the external environment, write a closure and call that closure
+insider the rule.  Example:
+
+    my @greeks = qw( alpha beta gamma );
+    
+    my $get_a_greek = sub {
+        return (shift @greeks);
+    };
+
+    my $lre  = List::RewriteElements->new ( {
+        list        => [ map {"$_\n"} (1..5) ],
+        body_rule   => sub {
+            my $record = shift;
+            my $rv;
+            chomp $record;
+            if ($record eq '4') {
+                $rv = &{$get_a_greek};
+            } else {
+                $rv = (10 * $record);
+            }
+            return $rv;
+        },
+        body_suppress   => sub {
+            my $record = shift;
+            chomp $record;
+            return if $record eq '5';
+        },
+    } );
+
+    $lre->generate_output();
+
+This will produce:
+
+    10
+    20
+    30
+    alpha
+
 =back
 
 B<Return Value:>  List::RewriteElements object.
@@ -472,11 +515,21 @@ also wouldn't get the statistical report methods.
 Why do you care?  Why do you want to look inside the black box?  If you really
 want to know, read the source!
 
+=head2 PREREQUISITES
+
+List::RewriteElements relies only on modules distributed with the Perl core as
+of 5.8.0.  IO::Capture::Stdout is required for the test suite, but a copy is
+included in the distribution under the F<t/> directory.
+
 =head1 BUGS
 
 None known at this time.  File bug reports at L<http://rt.cpan.org>.
 
 =head1 HISTORY
+
+0.02 Mon Dec 11 19:38:26 EST 2006
+    - Added tests to demonstrate use of closures to supply additional
+information to elements such as body_rule.
 
 0.01 Sat Dec  9 22:29:51 2006
     - original version; created by ExtUtils::ModuleMaker 0.47
@@ -498,4 +551,5 @@ The full text of the license can be found in the
 LICENSE file included with this module.
 
 =cut
+
 

@@ -1,5 +1,5 @@
 # -*- perl -*-
-
+#$Id: 05_header_rule.t 1103 2006-12-12 01:13:29Z jimk $
 # t/05_header_rule.t - test what happens when a header_rule is supplied
 
 use Test::More qw(no_plan); # tests => 2;

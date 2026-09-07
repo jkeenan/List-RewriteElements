@@ -1,5 +1,5 @@
 # -*- perl -*-
-
+#$Id: 06_header_suppress.t 1103 2006-12-12 01:13:29Z jimk $
 # t/06_header_suppress.tt - test what happens when header_suppress element is supplied
 
 use Test::More qw(no_plan); # tests => 2;

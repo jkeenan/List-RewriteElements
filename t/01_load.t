@@ -1,5 +1,5 @@
 # -*- perl -*-
-
+#$Id: 01_load.t 1103 2006-12-12 01:13:29Z jimk $
 # t/01_load.t - check module loading and test constructor
 
 use Test::More qw(no_plan); # tests => 2;

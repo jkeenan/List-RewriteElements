@@ -1,3 +1,4 @@
+#$Id: Makefile.PL 1103 2006-12-12 01:13:29Z jimk $
 
 
 use ExtUtils::MakeMaker;
@@ -9,6 +10,11 @@ WriteMakefile(
     AUTHOR       => 'James E Keenan (jkeenan@cpan.org)',
     ABSTRACT     => 'Create a new list by rewriting elements of a first list',
     PREREQ_PM    => {
-                     'Test::Simple' => 0.44,
+                     'Carp'             => 0,
+                     'File::Basename'   => 0,
+                     'File::Copy'       => 0,
+                     'File::Temp'       => 0,
+                     'Test::Simple'     => 0.44,
+                     'Tie::File'        => 0,
                     },
 );

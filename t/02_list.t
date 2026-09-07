@@ -1,5 +1,5 @@
 # -*- perl -*-
-
+#$Id: 02_list.t 1103 2006-12-12 01:13:29Z jimk $
 # t/02_list.t - test what happens when source is a list
 
 use Test::More qw(no_plan); # tests => 2;
