@@ -1,7 +1,7 @@
 package List::RewriteElements;
 use strict;
 use warnings;
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 use Carp;
 use Cwd;
 use File::Basename;
@@ -683,51 +683,6 @@ included in the distribution under the F<t/> directory.
 File bug reports at L<https://github.com/jkeenan/List-RewriteElements/issues>.
 
 One test failure reported during testing on Win32 via GitHub Actions.
-
-=head1 HISTORY
-
-0.10 Sat Oct 17 04:17:03 PM EDT 2026
-    - Small code modernizations, e.g., use of 3-arg 'open'.  Modernization of
-Makefile.PL, metadata handling, etc.  Repository now found on GitHub.  GitHub
-actions now used -- though this has reported one test failure on Win32 not
-previously reported.
-
-0.09 Mon Jan 22 22:35:56 EST 2007
-    - Update version number and release date only.  Purpose:  generate new
-round of tests by cpan testers, in the hope that it eliminates a FAIL report
-on v0.08 where failure was due solely to error on tester's box.
-
-0.08 Mon Jan  1 08:54:01 EST 2007
-    - xdg to the rescue!  Applied and extended patches supplied by David
-Golden for Win32.  In constructor, value of C<$/> is supplied to the C<recsep>
-option.
-
-0.07 Sun Dec 31 11:13:04 EST 2006
-    - Switched to using File::Spec::catfile() to generate one path (rather
-than Cwd::realpath().  This was done in an attempt to respond to corion's FAIL
-reports (but I don't have a good Windows box, so I can't be certain of the
-results).
-
-0.06 Sat Dec 16 11:31:38 EST 2006
-    - Created t/07_fixed_width.t and t/testlib/fixed.t to illustrate use of 
-List::RewriteElements with fixed-width data.
-
-0.05 Thu Dec 14 07:42:24 EST 2006
-    - Correction of POD formatting errors only; no change in functionality.
-CPAN upload.
-
-0.04 Wed Dec 13 23:04:33 EST 2006
-    - More tests; fine-tuning of code and documentation.  First CPAN upload.
-
-0.03 Tue Dec 12 22:13:00 EST 2006
-    - Implementation of statistical methods; more tests.
-
-0.02 Mon Dec 11 19:38:26 EST 2006
-    - Added tests to demonstrate use of closures to supply additional
-information to elements such as body_rule.
-
-0.01 Sat Dec  9 22:29:51 2006
-    - original version; created by ExtUtils::ModuleMaker 0.47
 
 =head1 ACKNOWLEDGEMENTS
 
