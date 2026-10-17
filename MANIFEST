@@ -1,9 +1,8 @@
 lib/List/RewriteElements.pm
 LICENSE
 Makefile.PL
-MANIFEST
+MANIFEST			This list of files
 MANIFEST.SKIP
-META.yml			Module meta-data (added by MakeMaker)
 README
 t/01_load.t
 t/02_list.t

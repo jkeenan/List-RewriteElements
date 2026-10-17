@@ -40,3 +40,17 @@
 ^init_update\.conf
 .patch$
 .DS_Store
+
+# GitHub-related files
+\B\.git\b
+\B\.github\b
+
+# various other files
+nytprof/
+nytprof.out
+\.travis.yml
+^README.md
+^.README.pod
+\.appveyor.yml
+.version_info.pl
+

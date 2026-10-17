@@ -326,10 +326,11 @@ Provide criteria to suppress output of header or individual record.
 
 =head1 DESCRIPTION
 
-It is common in many situations for you to receive a flat data file from someone
-else and have to generate a new file in which each row or record in the
-incoming file must either (a) be transformed according to some rule before 
-being printing to the new file; or (b) if it meets certain criteria, not output to the new file at all.
+It is common in many situations for you to receive a flat data file from
+someone else and have to generate a new file in which each row or record in
+the incoming file must either (a) be transformed according to some rule before
+being printing to the new file; or (b) if it meets certain criteria, not
+output to the new file at all.
 
 List::RewriteElements enables you to write such rules and criteria, generate
 the file of transformed data records, and get back some basic statistics about
@@ -680,7 +681,8 @@ included in the distribution under the F<t/> directory.
 
 =head1 BUGS
 
-None known at this time.  File bug reports at L<http://rt.cpan.org>.
+None known at this time.  File bug reports at
+L<https://github.com/jkeenan/List-RewriteElements/issues>.
 
 =head1 HISTORY
 
@@ -738,7 +740,7 @@ http://thenceforward.net/perl/modules/List-RewriteElements.
 
 =head1 COPYRIGHT
 
-Copyright 2006 James E Keenan (USA).
+Copyright 2006-2006 James E Keenan (USA).
 
 This program is free software; you can redistribute
 it and/or modify it under the same terms as Perl itself.
