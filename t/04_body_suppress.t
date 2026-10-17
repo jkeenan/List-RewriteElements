@@ -112,7 +112,7 @@ is($lines[-1], q{90}, "Last element of list is correct");
     ok(-f $dupe, "sample file copied correctly");
 
     my @greeks;
-    tie @greeks, 'Tie::File', $dupe, recsep => "\n";
+    tie @greeks, 'Tie::File', $dupe, recsep => $/;
     my $numcount = scalar(@greeks);
     
     my $snatch_number_ref = sub {
