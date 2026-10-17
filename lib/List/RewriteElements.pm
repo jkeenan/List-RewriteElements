@@ -101,7 +101,7 @@ sub generate_output {
             $outfile = File::Spec->catfile( ( cwd() ),
                 basename($self->{file}) . $self->{output_suffix} );
         }
-        open my $OUT, ">$outfile"
+        open my $OUT, '>', $outfile
             or croak "Unable to open $outfile for writing";
         my $oldfh = select($OUT);
         $self->_handler_control();

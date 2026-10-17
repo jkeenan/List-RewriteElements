@@ -87,7 +87,7 @@ is($lines[-1], q{90}, "Last element of list is correct");
         "Confirmed count of rows out");
 
     my @lines;
-    open my $FH, $output or croak "Unable to open $output for reading";
+    open my $FH, '<', $output or croak "Unable to open $output for reading";
     while (<$FH>) {
         chomp;
         push @lines, $_;
@@ -146,7 +146,7 @@ is($lines[-1], q{90}, "Last element of list is correct");
     ok(-f $output, "Output file created");
 
     my @lines;
-    open my $FH, $output or croak "Unable to open $output for reading";
+    open my $FH, '<', $output or croak "Unable to open $output for reading";
     while (<$FH>) {
         chomp;
         push @lines, $_;
