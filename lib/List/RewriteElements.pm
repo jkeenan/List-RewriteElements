@@ -1,8 +1,7 @@
 package List::RewriteElements;
-#$Id: RewriteElements.pm 1123 2007-01-23 03:39:35Z jimk $
-$VERSION = 0.09;
 use strict;
 use warnings;
+our $VERSION = '0.10';
 use Carp;
 use Cwd;
 use File::Basename;
@@ -681,10 +680,17 @@ included in the distribution under the F<t/> directory.
 
 =head1 BUGS
 
-None known at this time.  File bug reports at
-L<https://github.com/jkeenan/List-RewriteElements/issues>.
+File bug reports at L<https://github.com/jkeenan/List-RewriteElements/issues>.
+
+One test failure reported during testing on Win32 via GitHub Actions.
 
 =head1 HISTORY
+
+0.10 Sat Oct 17 04:17:03 PM EDT 2026
+    - Small code modernizations, e.g., use of 3-arg 'open'.  Modernization of
+Makefile.PL, metadata handling, etc.  Repository now found on GitHub.  GitHub
+actions now used -- though this has reported one test failure on Win32 not
+previously reported.
 
 0.09 Mon Jan 22 22:35:56 EST 2007
     - Update version number and release date only.  Purpose:  generate new
@@ -734,13 +740,12 @@ demonstrating processing of fixed-width data.
 
 =head1 AUTHOR
 
-James E Keenan.  CPAN ID: JKEENAN.  jkeenan@cpan.org. 
-http://search.cpan.org/~jkeenan/ or
-http://thenceforward.net/perl/modules/List-RewriteElements.
+James E Keenan.  CPAN ID: JKEENAN.  jkeenan@pobox.com
+L<http://thenceforward.net/perl/modules/List-RewriteElements>.
 
 =head1 COPYRIGHT
 
-Copyright 2006-2006 James E Keenan (USA).
+Copyright 2006-2026 James E Keenan (USA).
 
 This program is free software; you can redistribute
 it and/or modify it under the same terms as Perl itself.
