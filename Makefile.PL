@@ -21,6 +21,7 @@ WriteMakefile(
                     },
     ($mm_ver < 6.63_03 ? 'BUILD_REQUIRES' : 'TEST_REQUIRES' ) => {
                      'Test::Simple' => 0.44,
+                     'Data::Dump' => 0,
                     },
     ($mm_ver < 6.46 ? () : (META_MERGE => {
         'meta-spec' => { version => 2 },
