@@ -13,6 +13,7 @@ use_ok( 'File::Copy' );
 use lib ( "t/testlib" );
 use_ok( 'IO::Capture::Stdout' );
 use Carp;;
+use Data::Dump qw(dd pp);
 
 my $lre;
 my @lines;
@@ -152,6 +153,7 @@ is($lines[-1], q{90}, "Last element of list is correct");
         push @lines, $_;
     }
     close $FH or croak "Unable to close $output";
+    pp(\@lines);
     is($lines[0], q{10}, "First element of list is correct");
     is($lines[-2], q{80}, "Next to last element of list is correct");
     is($lines[-1], q{alpha}, "Last element of list is correct");
